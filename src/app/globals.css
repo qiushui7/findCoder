@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
   :root {
     color: #333;
@@ -21,33 +20,32 @@
       rgba(255, 255, 255, 0.5) 60%,
       rgba(255, 255, 255, 0)
     );
-}
+  }
 
   .dark {
-      color: #fff;
-      --bg-gradient: linear-gradient(135deg, #2c3e50 0%, #1a1a1a 100%);
-      --bg-color: rgba(0, 0, 0, 0.6);
-      --text-color: #fff;
-      --hover-bg-color: rgba(255, 255, 255, 0.1);
-      --border-color: rgba(255, 255, 255, 0.1);
-      --shadow-color: rgba(0, 0, 0, 0.4);
-      --search-bg-color: rgba(255, 255, 255, 0.1);
-      --skeleton-bg-color: #333;
-      --skeleton-shadow-color: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0) 0,
-        rgba(255, 255, 255, 0.02) 20%,
-        rgba(255, 255, 255, 0.05) 60%,
-        rgba(255, 255, 255, 0)
-      );
+    color: #fff;
+    --bg-gradient: linear-gradient(135deg, #2c3e50 0%, #1a1a1a 100%);
+    --bg-color: rgba(0, 0, 0, 0.6);
+    --text-color: #fff;
+    --hover-bg-color: rgba(255, 255, 255, 0.1);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    --search-bg-color: rgba(255, 255, 255, 0.1);
+    --skeleton-bg-color: #333;
+    --skeleton-shadow-color: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.02) 20%,
+      rgba(255, 255, 255, 0.05) 60%,
+      rgba(255, 255, 255, 0)
+    );
   }
 }
 
-.bg-gradient-custom{
+.bg-gradient-custom {
   background: var(--bg-gradient);
 }
 
-body{
+body {
   min-height: 100vh;
-  min-width: 1600px;
 }

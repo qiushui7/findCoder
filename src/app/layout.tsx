@@ -1,25 +1,28 @@
-import { ThemeProvider } from "next-themes"
-import { Navbar } from '@/components/layout/navbar'
-import './globals.css'
+import { ThemeProvider } from 'next-themes';
+import { Navbar } from '@/components/layout/navbar';
+import UserInfo from '@/components/user/userInfo';
+import './globals.css';
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body  className="bg-gradient-custom">
+      <body className="bg-gradient-custom">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar />
+          <Navbar>
+            <UserInfo />
+          </Navbar>
           {children}
         </ThemeProvider>
       </body>
     </html>
-  )
-} 
+  );
+}
