@@ -1,6 +1,6 @@
-import { Suspense } from 'react'
-import { RecommendList } from '@/components/recommend/recommend-list'
-import { RecommendSkeleton } from '@/components/recommend/recommend-skeleton'
+import { RecommendList } from '@/components/recommend/recommend-list';
+
+export const revalidate = 3600;
 
 export default function HomePage() {
   return (
@@ -13,10 +13,7 @@ export default function HomePage() {
           Discover top developers from around the world
         </p>
       </div>
-
-      <Suspense fallback={<RecommendSkeleton />}>
-        {/* <RecommendList /> */}
-      </Suspense>
+      <RecommendList />
     </main>
-  )
+  );
 }

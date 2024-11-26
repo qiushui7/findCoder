@@ -19,7 +19,7 @@ export function Navbar({ children }: { children: React.ReactNode }) {
 
   return (
     <nav className="sticky top-0 z-50 w-[80vw] mx-auto flex justify-center">
-      <div className="w-full h-20 bg-bgColor rounded-[20px] shadow-[0_8px_32px_var(--shadow-color)] my-5 px-3">
+      <div className="w-full h-20 bg-bgColor backdrop-blur-md rounded-[20px] shadow-[0_8px_32px_var(--shadow-color)] my-5 px-3">
         <div className="flex justify-between items-center h-full px-4">
           {/* Logo 部分 */}
           <Link

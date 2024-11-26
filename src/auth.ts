@@ -61,7 +61,17 @@ import GitHub from 'next-auth/providers/github';
 // import Zitadel from "next-auth/providers/zitadel"
 // import Zoho from "next-auth/providers/zoho"
 // import Zoom from "next-auth/providers/zoom"
-import type { NextAuthConfig } from 'next-auth';
+import type { DefaultSession, NextAuthConfig } from 'next-auth';
+
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      githubId?: string;
+      login?: string;
+    } & DefaultSession['user'];
+  }
+}
+
 export const config = {
   theme: {
     logo: 'https://next-auth.js.org/img/logo/logo-sm.png',
@@ -132,9 +142,21 @@ export const config = {
   ],
   basePath: '/auth',
   callbacks: {
-    jwt({ token, trigger, session }) {
+    jwt({ token, account, trigger, session, profile }) {
+      if (account && profile) {
+        token.githubId = profile.githubId;
+        token.login = profile.login;
+      }
       if (trigger === 'update') token.name = session.user.name;
       return token;
+    },
+    async session({ session, token }) {
+      // 将信息添加到 session 中
+      if (session.user) {
+        session.user.githubId = token.githubId as string;
+        session.user.login = token.login as string;
+      }
+      return session;
     },
   },
 } satisfies NextAuthConfig;

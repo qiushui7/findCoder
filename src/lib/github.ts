@@ -1,140 +1,108 @@
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN
+const GITHUB_API_BASE = 'https://api.github.com';
+const GITHUB_GRAPHQL_URL = 'https://api.github.com/graphql';
 
-interface GitHubUser {
-  login: string
-  id: number
-  avatar_url: string
-  html_url: string
-  name?: string
-  bio?: string
-  public_repos: number
-  followers: number
+// GitHub API 请求头
+const headers = {
+  Accept: 'application/vnd.github.v3+json',
+  Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+};
+
+// 获取用户关注的人
+async function getFollowing(username: string) {
+  const res = await fetch(`${GITHUB_API_BASE}/users/${username}/following`, {
+    headers,
+  });
+  return res.json();
 }
 
-interface Repository {
-  id: number
-  name: string
-  owner: GitHubUser
-  language: string
-  stargazers_count: number
-}
-
-export async function getPersonalizedRecommendations(username: string) {
-  try {
-    // 获取用户star的仓库
-    const starredRepos = await getStarredRepos(username)
-    
-    // 获取用户关注的开发者
-    const following = await getFollowing(username)
-    
-    // 分析用户偏好
-    const preferences = analyzePreferences(starredRepos, following)
-    
-    // 基于偏好生成推荐
-    return await generateRecommendations(preferences)
-  } catch (error) {
-    console.error('获取个性化推荐失败:', error)
-    throw new Error('获取推荐失败')
-  }
-}
-
-async function getStarredRepos(username: string): Promise<Repository[]> {
+// 获取用户的仓库
+async function getRepos(username: string) {
   const res = await fetch(
-    `https://api.github.com/users/${username}/starred?per_page=100`,
-    {
-      headers: {
-        'Authorization': `token ${GITHUB_TOKEN}`,
-        'Accept': 'application/vnd.github.v3+json',
-      },
-      next: { revalidate: 3600 }
-    }
-  )
-  
-  if (!res.ok) throw new Error('获取star仓库失败')
-  return res.json()
+    `${GITHUB_API_BASE}/users/${username}/repos?sort=updated`,
+    { headers },
+  );
+  return res.json();
 }
 
-async function getFollowing(username: string): Promise<GitHubUser[]> {
-  const res = await fetch(
-    `https://api.github.com/users/${username}/following?per_page=100`,
-    {
-      headers: {
-        'Authorization': `token ${GITHUB_TOKEN}`,
-        'Accept': 'application/vnd.github.v3+json',
-      },
-      next: { revalidate: 3600 }
-    }
-  )
-  
-  if (!res.ok) throw new Error('获取关注列表失败')
-  return res.json()
-}
-
-interface UserPreferences {
-  languages: Map<string, number>  // 编程语言偏好
-  topics: Map<string, number>     // 主题偏好
-  followedUsers: Set<string>      // 已关注的用户
-}
-
-function analyzePreferences(
-  repos: Repository[], 
-  following: GitHubUser[]
-): UserPreferences {
-  const languages = new Map<string, number>()
-  const topics = new Map<string, number>()
-  const followedUsers = new Set(following.map(user => user.login))
-
-  // 分析star仓库的语言分布
-  repos.forEach(repo => {
-    if (repo.language) {
-      languages.set(
-        repo.language,
-        (languages.get(repo.language) || 0) + 1
-      )
-    }
-  })
-
-  return {
-    languages,
-    topics,
-    followedUsers
-  }
-}
-
-async function generateRecommendations(
-  preferences: UserPreferences
-): Promise<GitHubUser[]> {
-  // 获取用户最常用的前3种语言
-  const topLanguages = [...preferences.languages.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map(([lang]) => lang)
-
-  // 构建搜索查询
-  const languageQuery = topLanguages
-    .map(lang => `language:${lang}`)
-    .join(' OR ')
-
-  // 搜索相关开发者
-  const res = await fetch(
-    'https://api.github.com/search/users?' + new URLSearchParams({
-      q: `${languageQuery} followers:>500`,
-      sort: 'followers',
-      order: 'desc',
-      per_page: '10'
-    }), {
-      headers: {
-        'Authorization': `token ${GITHUB_TOKEN}`,
-        'Accept': 'application/vnd.github.v3+json',
+// 根据语言搜索用户
+async function searchUsersByLanguage(language: string, limit: number = 20) {
+  console.log(language);
+  // GraphQL Query
+  const query = `
+    query($language: String!, $first: Int!) {
+      search(query: $language, type: USER, first: $first) {
+        edges {
+          node {
+            ... on User {
+              id
+              login
+              name
+              bio
+              avatarUrl
+              followers {
+                totalCount
+              }
+            }
+          }
+        }
       }
     }
-  )
+  `;
+  // Query Variables
+  const variables = {
+    language: `language:${language}`,
+    first: limit,
+  };
+  const res = await fetch(GITHUB_GRAPHQL_URL, {
+    method: 'POST',
+    headers: {
+      ...headers,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+  return res.json();
+}
 
-  if (!res.ok) throw new Error('搜索推荐开发者失败')
-  const data = await res.json()
-  
-  // 过滤掉已关注的用户
-  return data.items.filter(
-    (user: GitHubUser) => !preferences.followedUsers.has(user.login)
-  )
+// 获取推荐用户
+export async function getRecommendUsers(user: any) {
+  try {
+    // 1. 获取用户的仓库，分析主要使用的语言
+    const repos = await getRepos(user.login);
+    const languages = repos
+      .map((repo: any) => repo.language)
+      .filter(Boolean)
+      .reduce((acc: any, curr: string) => {
+        acc[curr] = (acc[curr] || 0) + 1;
+        return acc;
+      }, {});
+
+    // 获取用户最常用的语言
+    const topLanguages = Object.entries(languages)
+      .sort(([, a]: any, [, b]: any) => b - a)
+      .slice(0, 3)
+      .map(([lang]) => lang);
+
+    // 2. 根据用户常用语言搜索推荐用户
+    const recommendPromises = topLanguages.map((lang) =>
+      searchUsersByLanguage(lang),
+    );
+    const recommendResults = await Promise.all(recommendPromises);
+    // 3. 整合推荐结果
+    const recommendUsers = recommendResults
+      .flatMap((result: any) => result.data.search.edges || [])
+      .map((edge: any) => edge.node)
+      // // 过滤掉空对象 // 去重
+      .filter(
+        (recUser: any, index: number, self: any[]) =>
+          Object.keys(recUser).length !== 0 &&
+          index === self.findIndex((u) => u.id === recUser.id),
+      )
+      // // 限制推荐数量
+      .slice(0, 25);
+    return recommendUsers;
+  } catch (error) {
+    console.error('Error getting recommend users:', error);
+    return [];
+  }
 }

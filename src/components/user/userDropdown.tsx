@@ -29,7 +29,9 @@ export function UserDropdown({
       >
         {/* 用户信息 */}
         <div className="px-4 py-2 border-b border-borderColor">
-          <p className="font-medium">{user.name}</p>
+          <p className="font-medium">
+            {user.name}/{user.login}
+          </p>
           <p className="text-sm opacity-70">{user.email}</p>
         </div>
         {children}

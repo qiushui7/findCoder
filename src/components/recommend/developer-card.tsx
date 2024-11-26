@@ -1,45 +1,43 @@
-import Link from 'next/link'
-import { Card } from '@/components/ui/card'
-import { Avatar } from '@/components/ui/avatar'
-import { StarRating } from '@/components/ui/star-rating'
-import { formatDistanceToNow } from 'date-fns'
-import { GitHubIcon } from '@/components/ui/icons'
+import Link from 'next/link';
+import { Card } from '@/components/ui/card';
+import { Avatar } from '@/components/ui/avatar';
+import { StarRating } from '@/components/ui/star-rating';
+import { formatDistanceToNow } from 'date-fns';
+import { GitHubIcon } from '@/components/ui/icons';
 
 interface DeveloperCardProps {
   developer: {
-    id: number
-    login: string
-    name: string
-    avatar_url: string
-    bio: string
-    location: string
-    followers: number
-    public_repos: number
-    created_at: string
-    score: number
-  }
+    id: string;
+    login: string;
+    name: string;
+    avatarUrl: string;
+    bio: string;
+    followers: {
+      totalCount: number;
+    };
+  };
 }
 
 export function DeveloperCard({ developer }: DeveloperCardProps) {
   return (
-    <Card className="relative overflow-hidden hover:shadow-lg transition-shadow">
-      {/* Background Logo */}
-      <div className="absolute -top-5 -right-5 w-32 h-32 opacity-[0.03] rotate-[-15deg]">
-        <GitHubIcon />
-      </div>
-
-      <div className="relative z-10 p-6">
+    <Card
+      className="relative w-64 h-80 box-border bg-bgColor 
+      border border-borderColor rounded-2xl p-6 transition-all duration-300 cursor-pointer
+      hover:border-blueBorderColor hover:translate-y-[-5px] hover:shadow-xl"
+    >
+      <div>
         <div className="flex flex-col items-center mb-4">
-          <Link href={`/user/${developer.login}`}>
-            <Avatar 
-              src={developer.avatar_url}
-              alt={developer.name}
-              className="w-24 h-24 border-4 border-blue-500 transition-transform hover:scale-105 cursor-pointer"
+          <div className="w-24 h-24 rounded-full border-[3px] border-blueBorderColor cursor-pointer overflow-hidden">
+            <Avatar
+              src={developer.avatarUrl}
+              alt={developer.login}
+              width={96}
+              height={96}
+              className="hover:scale-110 transition-all duration-300"
             />
-          </Link>
-          
+          </div>
           <h3 className="mt-4 text-xl font-semibold">{developer.name}</h3>
-          <a 
+          <a
             href={`https://github.com/${developer.login}`}
             className="text-blue-500 hover:underline"
             target="_blank"
@@ -47,18 +45,14 @@ export function DeveloperCard({ developer }: DeveloperCardProps) {
           >
             @{developer.login}
           </a>
-          
-          {developer.location && (
-            <div className="mt-2 text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
-              <span>📍</span>
-              {developer.location}
-            </div>
-          )}
         </div>
 
-        <div className="min-h-[60px] mb-4">
+        <div className="min-h-[50px]">
           {developer.bio ? (
-            <p className="text-gray-600 dark:text-gray-300 text-sm text-center">
+            <p
+              className="text-textColor text-sm text-center text-ellipsis line-clamp-2"
+              title={developer.bio}
+            >
               {developer.bio}
             </p>
           ) : (
@@ -67,26 +61,11 @@ export function DeveloperCard({ developer }: DeveloperCardProps) {
             </p>
           )}
         </div>
-
-        <div className="grid grid-cols-3 gap-4 p-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="text-center">
-            <div className="text-sm text-gray-500">Repos</div>
-            <div className="font-medium">{developer.public_repos}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-sm text-gray-500">Followers</div>
-            <div className="font-medium">{developer.followers}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-sm text-gray-500">Score</div>
-            <StarRating value={developer.score} readonly />
-          </div>
-        </div>
-
-        <div className="text-xs text-gray-500 text-center mt-2">
-          Joined {formatDistanceToNow(new Date(developer.created_at), { addSuffix: true })}
+        <div className="flex flex-col items-center justify-center text-textColor text-[0.8rem]">
+          <div>Followers</div>
+          <div>{developer.followers.totalCount.toLocaleString()}</div>
         </div>
       </div>
     </Card>
-  )
-} 
+  );
+}

@@ -1,19 +1,42 @@
-import { DeveloperCard } from './developer-card'
+'use client';
 
-export async function RecommendList() {
-  //   const developers = await getRecommendDevelopers()
-  const developers = [
-    {
-      id: 1,
-      name: 'John Doe',
-      avatar: 'https://github.com/john-doe.png',
-    },
-  ]
+import { useEffect, useState } from 'react';
+import { DeveloperCard } from './developer-card';
+import { RecommendSkeleton } from './recommend-skeleton';
+
+export function RecommendList() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchRecommendUsers() {
+      try {
+        const res = await fetch('/api/recommend');
+        const data = await res.json();
+        setUsers(data.users);
+      } catch (error) {
+        console.error('Failed to fetch recommended users:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchRecommendUsers();
+  }, []);
+
+  if (loading) {
+    return <RecommendSkeleton />;
+  }
+
+  if (!users.length) {
+    return <div>No recommendations available</div>;
+  }
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {developers.map((developer) => (
-        <DeveloperCard key={developer.id} developer={developer} />
+    <div className="grid grid-cols-5 gap-8 justify-center justify-items-center">
+      {users.map((user: any) => (
+        <DeveloperCard key={user.id} developer={user} />
       ))}
     </div>
-  )
-} 
+  );
+}
