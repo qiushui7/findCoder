@@ -1,3 +1,5 @@
+import { scrapeTrendingDevelopers } from './scrape';
+
 const GITHUB_API_BASE = 'https://api.github.com';
 const GITHUB_GRAPHQL_URL = 'https://api.github.com/graphql';
 
@@ -103,6 +105,17 @@ export async function getRecommendUsers(user: any) {
     return recommendUsers;
   } catch (error) {
     console.error('Error getting recommend users:', error);
+    return [];
+  }
+}
+
+// 获取 trending 用户
+export async function getTrendingUsers(language: string, since: string) {
+  try {
+    const developers = await scrapeTrendingDevelopers({ language, since });
+    return developers;
+  } catch (error) {
+    console.error('Error getting trending users:', error);
     return [];
   }
 }

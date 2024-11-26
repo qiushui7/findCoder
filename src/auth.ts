@@ -140,7 +140,7 @@ export const config = {
     // Zoho,
     // Zoom,
   ],
-  basePath: '/auth',
+  basePath: '/api/auth',
   callbacks: {
     jwt({ token, account, trigger, session, profile }) {
       if (account && profile) {
