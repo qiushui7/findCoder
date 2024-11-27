@@ -1,6 +1,6 @@
 import { ThemeProvider } from 'next-themes';
 import { Navbar } from '@/components/layout/navbar';
-import UserInfo from '@/components/user/userInfo';
+import UserInfo from '@/components/user/info';
 import { SessionProvider } from 'next-auth/react';
 import './globals.css';
 import { auth } from 'auth';

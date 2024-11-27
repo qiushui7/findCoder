@@ -1,7 +1,7 @@
 import { auth, signIn, signOut } from 'auth';
 import { Button } from '@/components/ui/button';
 import { GitHubIcon } from '../ui/icons';
-import { UserDropdown } from './userDropdown';
+import { UserDropdown } from './dropdown';
 import { LogOut } from 'lucide-react';
 
 export default async function UserInfo() {

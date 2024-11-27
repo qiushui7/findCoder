@@ -9,6 +9,12 @@ const headers = {
   Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
 };
 
+// 获取用户信息
+async function getUserInfo(username: string) {
+  const res = await fetch(`${GITHUB_API_BASE}/users/${username}`, { headers });
+  return res.json();
+}
+
 // 获取用户关注的人
 async function getFollowing(username: string) {
   const res = await fetch(`${GITHUB_API_BASE}/users/${username}/following`, {
@@ -118,4 +124,20 @@ export async function getTrendingUsers(language: string, since: string) {
     console.error('Error getting trending users:', error);
     return [];
   }
+}
+
+// 获取用户信息
+export async function getUserProfile(login: string) {
+  // 获取用户的仓库
+  const repos = await getRepos(login);
+  // 根据仓库计算用户总star数
+  const totalStars = repos.reduce(
+    (acc: number, repo: any) => acc + repo.stargazers_count,
+    0,
+  );
+  const info = await getUserInfo(login);
+  return {
+    ...info,
+    totalStars,
+  };
 }

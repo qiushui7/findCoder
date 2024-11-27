@@ -20,16 +20,13 @@ const Avatar = React.forwardRef<HTMLImageElement, AvatarProps>(
     },
     ref,
   ) => {
-    const [error, setError] = React.useState(false);
-
     return (
       <Image
         ref={ref}
-        src={error ? fallback || '/avatar-fallback.png' : src}
+        src={src}
         alt={alt}
         width={width}
         height={height}
-        onError={() => setError(true)}
         className={cn('rounded-full object-cover', className)}
         {...props}
       />

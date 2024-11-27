@@ -7,6 +7,7 @@
     color: #333;
     --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     --bg-color: rgba(255, 255, 255, 0.7);
+    --bg-color-blur: rgba(255, 255, 255, 0.9);
     --text-color: #333;
     --less-text-color: #474646;
     --hover-bg-color: rgba(255, 255, 255, 0.9);
@@ -28,6 +29,7 @@
     color: #fff;
     --bg-gradient: linear-gradient(135deg, #2c3e50 0%, #1a1a1a 100%);
     --bg-color: rgba(0, 0, 0, 0.6);
+    --bg-color-blur: rgba(0, 0, 0, 0.9);
     --text-color: #fff;
     --less-text-color: #ccc;
     --hover-bg-color: rgba(255, 255, 255, 0.1);

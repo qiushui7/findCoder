@@ -11,6 +11,7 @@ export default {
       colors: {
         bgGradient: 'var(--bg-gradient)',
         bgColor: 'var(--bg-color)',
+        bgColorBlur: 'var(--bg-color-blur)',
         shadowColor: 'var(--shadow-color)',
         borderColor: 'var(--border-color)',
         hoverBgColor: 'var(--hover-bg-color)',
